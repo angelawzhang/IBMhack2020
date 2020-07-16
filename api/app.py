@@ -1,8 +1,10 @@
 from flask import Flask, request, jsonify
+import os
 from tinydb import TinyDB, Query
 
 app = Flask(__name__)
 db = TinyDB('./util/db.json')
+port = int( os.getenv( 'PORT', 5000 ) )
 
 def verify_body(body):
     try:
@@ -97,3 +99,6 @@ def get_by_domain(domain_name):
             'blackOwned': False,
             'alternatives': res_alternatives
         }), 200
+
+if __name__ == '__main__':
+    app.run( host='0.0.0.0', port=port, debug=True)
