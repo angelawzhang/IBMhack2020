@@ -6,7 +6,7 @@ db = TinyDB('./db.json')
 
 def verify_body(body):
     try:
-        return body['name'] and body['domain'] and bool(body['blackOwned']) and body['logo'] and body['categories'] and body['photos']
+        return body['name'] and body['domain'] and type(body['blackOwned']) == bool and body['logo'] and body['categories'] and body['photos']
     except:
         return False
 
@@ -25,16 +25,16 @@ def show(business_name):
     Business = Query()
     businesses = db.search((Business['type'] == 'business') & (Business['name'] == business_name))
     resp = businesses[0] if len(businesses) > 0 else {}
-    status = 200
     if resp == {}:
-        status = 404
-    return jsonify(resp), status
+        return jsonify({'msg': 'business with that name not found'}), 404
+    return jsonify(resp), 200
 
 @app.route('/business', methods=['POST'])
 def create():
     body = request.json
     valid = verify_body(body)
     if not valid:
+        print(body)
         return jsonify({'msg': 'invalid request body'}), 400
     
     Business = Query()
@@ -64,3 +64,42 @@ def delete(business_name):
     
     db.remove((Business['type'] == 'business') & (Business['name'] == business_name))
     return jsonify({'msg': 'business deleted'}), 200
+
+@app.route('/domain/<domain_name>', methods=['GET'])
+def get_by_domain(domain_name):
+    Business = Query()
+    q = db.search(
+        (Business['type'] == 'business')
+        & (Business['domain'] == domain_name)
+        )
+    if len(q) == 0:
+        return jsonify({'msg': 'business with that domain not found'}), 404
+
+    if q[0]['blackOwned']:
+        return jsonify({
+            'blackOwned': True,
+            'alternatives': []}), 200
+    else: 
+        print(q[0])
+        print(q[0]['categories'])
+        q2 = db.search(
+            (Business['type'] == 'business')
+            & (Business['blackOwned'] == True)
+        )
+
+        def doesIntersect(bus):
+            return len(list(set(bus['categories']) & set(q[0]['categories']))) > 0
+
+
+        alternatives = filter(doesIntersect, q2)
+        res_alternatives = []
+        for alt in alternatives:
+            res_alternatives.append(alt)
+
+
+        print(res_alternatives)
+
+        return jsonify({
+            'blackOwned': False,
+            'alternatives': res_alternatives
+        }), 200
