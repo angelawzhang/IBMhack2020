@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from tinydb import TinyDB, Query
 
 app = Flask(__name__)
-db = TinyDB('./db.json')
+db = TinyDB('./util/db.json')
 
 def verify_body(body):
     try:
@@ -34,7 +34,6 @@ def create():
     body = request.json
     valid = verify_body(body)
     if not valid:
-        print(body)
         return jsonify({'msg': 'invalid request body'}), 400
     
     Business = Query()
@@ -80,8 +79,6 @@ def get_by_domain(domain_name):
             'blackOwned': True,
             'alternatives': []}), 200
     else: 
-        print(q[0])
-        print(q[0]['categories'])
         q2 = db.search(
             (Business['type'] == 'business')
             & (Business['blackOwned'] == True)
@@ -95,9 +92,6 @@ def get_by_domain(domain_name):
         res_alternatives = []
         for alt in alternatives:
             res_alternatives.append(alt)
-
-
-        print(res_alternatives)
 
         return jsonify({
             'blackOwned': False,
