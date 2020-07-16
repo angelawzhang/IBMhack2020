@@ -13,7 +13,7 @@ Currently, the API can be found hosted on IBM Cloud Foundry at [this link](https
 
 "Businesses" as referred to below are objects of this format:
 
-```json
+```javascript
 {
     "type": "business", // hard-coded to always be this
     "name": "<business-name>",
@@ -49,7 +49,7 @@ Currently, the API can be found hosted on IBM Cloud Foundry at [this link](https
 ##### /domain:
 
 * GET /domain/<domain-name>: used by the chrome extension: provide the domain name (domain apex, i.e. send `google.com` if you're on the page `maps.google.com/<some-path>`). The result will be a response of the following format:
-```json
+```javascript
 {
     "blackOwned": false, // or true
     "alternatives": [
