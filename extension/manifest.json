@@ -10,7 +10,7 @@
                 "128": "images/logo-128.png" },
 
 
-    "permissions": ["declarativeContent", "storage"],
+    "permissions": ["declarativeContent", "storage", "tabs"],
 
     "background": {
         "scripts": ["scripts/background.js"],
