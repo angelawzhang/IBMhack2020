@@ -1,11 +1,8 @@
 from flask import Flask, request, jsonify
 import os
 from tinydb import TinyDB, Query
-from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
-cors = CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
 db = TinyDB('./util/db.json')
 port = int( os.getenv( 'PORT', 5000 ) )
 
@@ -16,19 +13,16 @@ def verify_body(body):
         return False
 
 @app.route('/')
-@cross_origin()
 def root():
     return 'root route of API'
 
 @app.route('/business', methods=['GET'])
-@cross_origin()
 def index():
     Business = Query()
     businesses = db.search(Business['type'] == 'business')
     return jsonify(businesses), 200
 
 @app.route('/business/<business_name>', methods=['GET'])
-@cross_origin()
 def show(business_name):
     Business = Query()
     businesses = db.search((Business['type'] == 'business') & (Business['name'] == business_name))
@@ -38,7 +32,6 @@ def show(business_name):
     return jsonify(resp), 200
 
 @app.route('/business', methods=['POST'])
-@cross_origin()
 def create():
     body = request.json
     valid = verify_body(body)
@@ -64,7 +57,6 @@ def create():
     return jsonify(new_business), 200
 
 @app.route('/business/<business_name>', methods=['DELETE'])
-@cross_origin()
 def delete(business_name):
     Business = Query()
     q = db.search((Business['type'] == 'business') & (Business['name'] == business_name))
@@ -75,7 +67,6 @@ def delete(business_name):
     return jsonify({'msg': 'business deleted'}), 200
 
 @app.route('/domain/<domain_name>', methods=['GET'])
-@cross_origin()
 def get_by_domain(domain_name):
     Business = Query()
     q = db.search(
